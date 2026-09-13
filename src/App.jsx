@@ -150,23 +150,6 @@ export function App() {
         </button>
       </header>
 
-      {/* Mobile-Only Experience: Header + Export + Desktop Notice */}
-      <div className="mobile-only-screen">
-        <div className="card mobile-welcome-card">
-          <div className="mobile-welcome-icon">
-            <FileSpreadsheet size={32} className="text-success" />
-          </div>
-          <h2 className="mobile-welcome-title">EMI & Prepayment Planner</h2>
-          <p className="mobile-welcome-desc">
-            Full interactive visual planner is optimized for desktop browsers. You can export your current loan amortization scenarios directly to Excel below.
-          </p>
-          <button className="btn btn-primary mobile-export-action-btn" onClick={handleExportExcel}>
-            <FileSpreadsheet size={18} />
-            Export All Scenarios to Excel (.xlsx)
-          </button>
-        </div>
-      </div>
-
       {/* Desktop-Only Full Planner Interface */}
       <div className="desktop-only-content">
         {/* Main Configuration Grid: Loan Parameters + Prepayment Strategy */}
