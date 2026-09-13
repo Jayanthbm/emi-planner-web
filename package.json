@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "date-fns": "^4.4.0",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
+    "lucide-react": "^1.45.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
