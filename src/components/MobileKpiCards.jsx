@@ -67,6 +67,23 @@ export function MobileKpiCards({ result, loanConfig, scenarioName }) {
           </div>
         </div>
 
+        {/* Total Amount */}
+        <div className="mobile-kpi-item">
+          <div className="mobile-kpi-icon neutral-bg">
+            <Receipt size={18} className="text-accent" />
+          </div>
+          <div className="mobile-kpi-content">
+            <span className="text-xs text-muted">Total Amount Payable</span>
+            <span className="text-base font-bold">{formatINR(totalPaid)}</span>
+            <span className="text-xs text-muted block">
+              Principal: {formatINR(loanConfig.principal)}
+            </span>
+            <span className="text-xs text-muted block">
+              Interest: {formatINR(totalInterestPaid)}
+            </span>
+          </div>
+        </div>
+
         {/* Debt-Free Date */}
         <div className="mobile-kpi-item">
           <div className="mobile-kpi-icon info-bg">
@@ -76,20 +93,6 @@ export function MobileKpiCards({ result, loanConfig, scenarioName }) {
             <span className="text-xs text-muted">Debt-Free By</span>
             <span className="text-base font-bold">{format(actualEndDate, 'MMM yyyy')}</span>
             <span className="text-xs text-muted">Originally {format(originalEndDate, 'MMM yyyy')}</span>
-          </div>
-        </div>
-
-        {/* Total Amount */}
-        <div className="mobile-kpi-item">
-          <div className="mobile-kpi-icon neutral-bg">
-            <Receipt size={18} className="text-accent" />
-          </div>
-          <div className="mobile-kpi-content">
-            <span className="text-xs text-muted">Total Amount Payable</span>
-            <span className="text-base font-bold">{formatINR(totalPaid)}</span>
-            <span className="text-xs text-muted">
-              Principal {formatCompactINR(loanConfig.principal)} + Interest {formatCompactINR(totalInterestPaid)}
-            </span>
           </div>
         </div>
       </div>

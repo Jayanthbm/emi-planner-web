@@ -65,12 +65,31 @@ export function KpiCards({ result, loanConfig, scenarioName }) {
             )}
           </div>
           <span className="kpi-footnote">
-            Closes in {formatTenure(actualMonths)} ({actualMonths} mos) instead of {formatTenure(originalTenureMonths)}
+            Pays off in {formatTenure(actualMonths)} (orig. {formatTenure(originalTenureMonths)})
           </span>
         </div>
       </div>
 
-      {/* KPI 3: Debt-Free Date */}
+      {/* KPI 3: Total Amount to be Paid */}
+      <div className="kpi-card">
+        <div className="kpi-icon-wrapper neutral-bg">
+          <Receipt size={22} className="text-accent" />
+        </div>
+        <div className="kpi-content">
+          <span className="kpi-label">Total Amount To Be Paid</span>
+          <div className="kpi-value-row">
+            <span className="kpi-value">{formatINR(totalPaid)}</span>
+          </div>
+          <span className="kpi-footnote block">
+            Principal: {formatINR(loanConfig.principal)} ({formatCompactINR(loanConfig.principal)})
+          </span>
+          <span className="kpi-footnote block">
+            Interest: {formatINR(totalInterestPaid)} ({formatCompactINR(totalInterestPaid)})
+          </span>
+        </div>
+      </div>
+
+      {/* KPI 4: Debt-Free Date */}
       <div className="kpi-card">
         <div className="kpi-icon-wrapper info-bg">
           <Calendar size={22} className="text-info" />
@@ -82,22 +101,6 @@ export function KpiCards({ result, loanConfig, scenarioName }) {
           </div>
           <span className="kpi-footnote">
             Originally scheduled for {format(originalEndDate, 'MMM yyyy')}
-          </span>
-        </div>
-      </div>
-
-      {/* KPI 4: Total Amount to be Paid */}
-      <div className="kpi-card">
-        <div className="kpi-icon-wrapper neutral-bg">
-          <Receipt size={22} className="text-accent" />
-        </div>
-        <div className="kpi-content">
-          <span className="kpi-label">Total Amount To Be Paid</span>
-          <div className="kpi-value-row">
-            <span className="kpi-value">{formatINR(totalPaid)}</span>
-          </div>
-          <span className="kpi-footnote">
-            Principal {formatCompactINR(loanConfig.principal)} + Interest {formatCompactINR(totalInterestPaid)}
           </span>
         </div>
       </div>

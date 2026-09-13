@@ -66,7 +66,7 @@ export function ScenarioManager({
           <h2 className="card-title">Prepayment Strategy</h2>
           <p className="card-subtitle">Manage multiple plans and stepped payment timelines</p>
         </div>
-        <div className="scenario-header-actions">
+        <div className="scenario-header-actions flex-align-center gap-2">
           <button
             className="btn btn-secondary btn-sm"
             onClick={() => onDuplicateScenario(activeScenario.id)}
