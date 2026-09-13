@@ -130,7 +130,7 @@ export function App() {
 
   return (
     <div className="app-container">
-      {/* Top Header */}
+      {/* Header - shown on all screens */}
       <header className="app-header">
         <div className="brand-title-wrap">
           <div className="brand-icon">
@@ -144,58 +144,78 @@ export function App() {
           </div>
         </div>
 
-        <button className="btn btn-secondary" onClick={handleExportExcel}>
+        <button className="btn btn-secondary export-btn-main" onClick={handleExportExcel}>
           <FileSpreadsheet size={16} className="text-success" />
           Export All Scenarios to Excel
         </button>
       </header>
 
-      {/* Main Configuration Grid: Loan Parameters + Prepayment Strategy */}
-      <section className="top-grid">
-        <LoanInputs
-          config={loanConfig}
-          onChange={setLoanConfig}
-          onReset={handleResetLoan}
-        />
-        <ScenarioManager
-          scenarios={scenarios}
-          activeScenarioId={activeScenarioId}
-          onSelectScenario={setActiveScenarioId}
-          onUpdateScenario={handleUpdateScenario}
-          onAddScenario={handleAddScenario}
-          onDuplicateScenario={handleDuplicateScenario}
-          onDeleteScenario={handleDeleteScenario}
-          standardEmi={standardEmi}
-        />
-      </section>
+      {/* Mobile-Only Experience: Header + Export + Desktop Notice */}
+      <div className="mobile-only-screen">
+        <div className="card mobile-welcome-card">
+          <div className="mobile-welcome-icon">
+            <FileSpreadsheet size={32} className="text-success" />
+          </div>
+          <h2 className="mobile-welcome-title">EMI & Prepayment Planner</h2>
+          <p className="mobile-welcome-desc">
+            Full interactive visual planner is optimized for desktop browsers. You can export your current loan amortization scenarios directly to Excel below.
+          </p>
+          <button className="btn btn-primary mobile-export-action-btn" onClick={handleExportExcel}>
+            <FileSpreadsheet size={18} />
+            Export All Scenarios to Excel (.xlsx)
+          </button>
+        </div>
+      </div>
 
-      {/* Key Metrics / KPI Overview */}
-      <section>
-        <KpiCards
-          result={activeScheduleResult}
-          loanConfig={loanConfig}
-          scenarioName={activeScenario.name}
-        />
-      </section>
+      {/* Desktop-Only Full Planner Interface */}
+      <div className="desktop-only-content">
+        {/* Main Configuration Grid: Loan Parameters + Prepayment Strategy */}
+        <section className="top-grid">
+          <LoanInputs
+            config={loanConfig}
+            onChange={setLoanConfig}
+            onReset={handleResetLoan}
+          />
+          <ScenarioManager
+            scenarios={scenarios}
+            activeScenarioId={activeScenarioId}
+            onSelectScenario={setActiveScenarioId}
+            onUpdateScenario={handleUpdateScenario}
+            onAddScenario={handleAddScenario}
+            onDuplicateScenario={handleDuplicateScenario}
+            onDeleteScenario={handleDeleteScenario}
+            standardEmi={standardEmi}
+          />
+        </section>
 
-      {/* Multi-Scenario Comparison Matrix */}
-      <section>
-        <ScenarioComparison
-          loanConfig={loanConfig}
-          scenarios={scenarios}
-          activeScenarioId={activeScenarioId}
-          onSelectScenario={setActiveScenarioId}
-        />
-      </section>
+        {/* Key Metrics / KPI Overview */}
+        <section>
+          <KpiCards
+            result={activeScheduleResult}
+            loanConfig={loanConfig}
+            scenarioName={activeScenario.name}
+          />
+        </section>
 
-      {/* Month-by-Month Amortization Schedule */}
-      <section>
-        <ScheduleTable
-          scheduleResult={activeScheduleResult}
-          scenarioName={activeScenario.name}
-          onExportExcel={handleExportExcel}
-        />
-      </section>
+        {/* Multi-Scenario Comparison Matrix */}
+        <section>
+          <ScenarioComparison
+            loanConfig={loanConfig}
+            scenarios={scenarios}
+            activeScenarioId={activeScenarioId}
+            onSelectScenario={setActiveScenarioId}
+          />
+        </section>
+
+        {/* Month-by-Month Amortization Schedule */}
+        <section>
+          <ScheduleTable
+            scheduleResult={activeScheduleResult}
+            scenarioName={activeScenario.name}
+            onExportExcel={handleExportExcel}
+          />
+        </section>
+      </div>
 
       {/* Footer */}
       <footer className="app-footer">
