@@ -1,8 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { calculateAmortizationSchedule } from '../utils/emiCalculator';
-import { formatINR, formatCompactINR, formatTenure } from '../utils/formatters';
-import { Award, Check } from 'lucide-react';
+import { formatINR, formatTenure } from '../utils/formatters';
+import { Award } from 'lucide-react';
 
 export function ScenarioComparison({ loanConfig, scenarios, activeScenarioId, onSelectScenario }) {
   const scenarioResults = scenarios.map((scenario) => ({
@@ -10,6 +10,7 @@ export function ScenarioComparison({ loanConfig, scenarios, activeScenarioId, on
     result: calculateAmortizationSchedule(loanConfig, scenario.payments),
   }));
 
+  // Find the scenario that saves the most interest
   let maxSaved = -1;
   let bestScenarioId = null;
   scenarioResults.forEach(({ scenario, result }) => {
@@ -23,13 +24,12 @@ export function ScenarioComparison({ loanConfig, scenarios, activeScenarioId, on
     <div className="card scenario-comparison-card">
       <div className="card-header flex-between">
         <div>
-          <h2 className="card-title">Strategy Comparison</h2>
+          <h2 className="card-title">Scenario Comparison Matrix</h2>
           <p className="card-subtitle">Side-by-side analysis of all prepayment strategies</p>
         </div>
       </div>
 
-      {/* Desktop Table View */}
-      <div className="table-responsive desktop-comparison-table">
+      <div className="table-responsive">
         <table className="comparison-table">
           <thead>
             <tr>
@@ -53,8 +53,8 @@ export function ScenarioComparison({ loanConfig, scenarios, activeScenarioId, on
                     <div className="flex-align-center gap-1">
                       <span>{scenario.name}</span>
                       {isBest && (
-                        <span className="badge badge-success badge-sm">
-                          <Award size={11} /> Best
+                        <span className="badge badge-success badge-sm" title="Highest interest savings">
+                          <Award size={12} /> Best
                         </span>
                       )}
                     </div>
@@ -104,61 +104,6 @@ export function ScenarioComparison({ loanConfig, scenarios, activeScenarioId, on
             })}
           </tbody>
         </table>
-      </div>
-
-      {/* Mobile Card View for Comparison */}
-      <div className="mobile-comparison-cards">
-        {scenarioResults.map(({ scenario, result }) => {
-          const isActive = scenario.id === activeScenarioId;
-          const isBest = scenario.id === bestScenarioId && scenarios.length > 1;
-
-          return (
-            <div
-              key={scenario.id}
-              className={`comparison-mobile-card ${isActive ? 'active-plan' : ''}`}
-              onClick={() => onSelectScenario(scenario.id)}
-            >
-              <div className="flex-between comp-mobile-header">
-                <div className="flex-align-center gap-1">
-                  <span className="comp-plan-name">{scenario.name}</span>
-                  {isBest && (
-                    <span className="badge badge-success badge-xs">
-                      <Award size={10} /> Best
-                    </span>
-                  )}
-                </div>
-                {isActive ? (
-                  <span className="badge badge-accent badge-xs">
-                    <Check size={11} /> Active
-                  </span>
-                ) : (
-                  <button className="btn btn-secondary btn-xs select-plan-btn">Select</button>
-                )}
-              </div>
-
-              <div className="comp-mobile-grid">
-                <div className="comp-metric">
-                  <span className="comp-metric-label">Tenure</span>
-                  <span className="comp-metric-val">{formatTenure(result.actualMonths)}</span>
-                  {result.monthsSaved > 0 && (
-                    <span className="comp-metric-sub text-accent">-{formatTenure(result.monthsSaved)}</span>
-                  )}
-                </div>
-                <div className="comp-metric">
-                  <span className="comp-metric-label">Interest Saved</span>
-                  <span className="comp-metric-val text-success">
-                    {result.interestSaved > 0 ? formatCompactINR(result.interestSaved) : '₹0'}
-                  </span>
-                  <span className="comp-metric-sub text-muted">Paid: {formatCompactINR(result.totalInterestPaid)}</span>
-                </div>
-                <div className="comp-metric">
-                  <span className="comp-metric-label">Payoff Date</span>
-                  <span className="comp-metric-val">{format(result.actualEndDate, 'MMM yyyy')}</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
   );

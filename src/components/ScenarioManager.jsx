@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Copy, Sparkles, Calendar, IndianRupee } from 'lucide-react';
+import { Plus, Trash2, Copy, Sparkles, AlertCircle } from 'lucide-react';
 import { formatINR, formatCompactINR } from '../utils/formatters';
 
 export function ScenarioManager({
@@ -20,6 +20,7 @@ export function ScenarioManager({
     const lastPayment = activeScenario.payments[activeScenario.payments.length - 1];
     const newAmount = lastPayment ? lastPayment.amount + 5000 : standardEmi;
     
+    // Guess next year Jan 1st or 1 year after last
     let nextDate = '2026-01-01';
     if (lastPayment && lastPayment.date) {
       const year = new Date(lastPayment.date).getFullYear() + 1;
@@ -40,12 +41,13 @@ export function ScenarioManager({
       ...updatedPayments[index],
       [field]: field === 'amount' ? parseFloat(value) || 0 : value,
     };
+    // Re-sort chronologically
     updatedPayments.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     onUpdateScenario(activeScenario.id, { payments: updatedPayments });
   };
 
   const handleDeletePayment = (index) => {
-    if (activeScenario.payments.length <= 1) return;
+    if (activeScenario.payments.length <= 1) return; // Keep at least one
     const updatedPayments = activeScenario.payments.filter((_, i) => i !== index);
     onUpdateScenario(activeScenario.id, { payments: updatedPayments });
   };
@@ -70,36 +72,34 @@ export function ScenarioManager({
             onClick={() => onDuplicateScenario(activeScenario.id)}
             title="Duplicate this strategy"
           >
-            <Copy size={13} /> Duplicate
+            <Copy size={14} /> Duplicate Plan
           </button>
           <button
             className="btn btn-primary btn-sm"
             onClick={onAddScenario}
             title="Create new strategy"
           >
-            <Plus size={13} /> New Plan
+            <Plus size={14} /> New Plan
           </button>
         </div>
       </div>
 
       {/* Scenario Tabs */}
-      <div className="scenario-tabs-container">
-        <div className="scenario-tabs">
-          {scenarios.map((s) => (
-            <button
-              key={s.id}
-              className={`scenario-tab ${s.id === activeScenarioId ? 'active' : ''}`}
-              onClick={() => {
-                onSelectScenario(s.id);
-                setNameInput(s.name);
-                setEditingName(false);
-              }}
-            >
-              <span className="tab-name">{s.name}</span>
-              <span className="tab-steps-count">{s.payments.length}</span>
-            </button>
-          ))}
-        </div>
+      <div className="scenario-tabs">
+        {scenarios.map((s) => (
+          <button
+            key={s.id}
+            className={`scenario-tab ${s.id === activeScenarioId ? 'active' : ''}`}
+            onClick={() => {
+              onSelectScenario(s.id);
+              setNameInput(s.name);
+              setEditingName(false);
+            }}
+          >
+            <span className="tab-name">{s.name}</span>
+            <span className="tab-steps-count">{s.payments.length} step{s.payments.length > 1 ? 's' : ''}</span>
+          </button>
+        ))}
       </div>
 
       {/* Active Scenario Details */}
@@ -127,13 +127,10 @@ export function ScenarioManager({
               </div>
             ) : (
               <div className="flex-align-center gap-2">
-                <h3
-                  className="scenario-name-heading"
-                  onClick={() => {
-                    setNameInput(activeScenario.name);
-                    setEditingName(true);
-                  }}
-                >
+                <h3 className="scenario-name-heading" onClick={() => {
+                  setNameInput(activeScenario.name);
+                  setEditingName(true);
+                }}>
                   {activeScenario.name}
                 </h3>
                 <button
@@ -142,11 +139,13 @@ export function ScenarioManager({
                     setNameInput(activeScenario.name);
                     setEditingName(true);
                   }}
+                  title="Rename"
                 >
-                  Rename
+                  Edit name
                 </button>
               </div>
             )}
+            <p className="text-muted text-xs">{activeScenario.description || 'Custom prepayment stepped schedule'}</p>
           </div>
 
           {scenarios.length > 1 && (
@@ -155,7 +154,7 @@ export function ScenarioManager({
               onClick={() => onDeleteScenario(activeScenario.id)}
               title="Delete scenario"
             >
-              <Trash2 size={13} /> Delete
+              <Trash2 size={13} /> Delete Plan
             </button>
           )}
         </div>
@@ -164,16 +163,17 @@ export function ScenarioManager({
         <div className="stepped-payments-container">
           <div className="flex-between section-subheader">
             <span className="text-xs font-semibold text-muted text-uppercase tracking-wider">
-              Stepped Payment Timeline
+              Stepped Monthly Payment Timeline
             </span>
             <button className="btn btn-accent-outline btn-xs" onClick={handleAddPaymentStep}>
-              <Plus size={13} /> Add Step
+              <Plus size={13} /> Add Step-Up
             </button>
           </div>
 
           <div className="stepped-timeline-list">
             {activeScenario.payments.map((p, idx) => {
               const diffFromEmi = p.amount - standardEmi;
+              const isFirst = idx === 0;
 
               return (
                 <div key={idx} className="timeline-step-row">
@@ -182,8 +182,8 @@ export function ScenarioManager({
                   </div>
 
                   <div className="timeline-step-inputs">
-                    <div className="step-field step-field-date">
-                      <label className="field-micro-label">From</label>
+                    <div className="step-field">
+                      <label className="text-xs text-muted">Effective From</label>
                       <input
                         type="date"
                         className="input-field input-field-sm"
@@ -192,8 +192,8 @@ export function ScenarioManager({
                       />
                     </div>
 
-                    <div className="step-field step-field-amount">
-                      <label className="field-micro-label">Monthly</label>
+                    <div className="step-field">
+                      <label className="text-xs text-muted">Monthly Amount</label>
                       <div className="input-with-icon">
                         <span className="icon-prefix">₹</span>
                         <input
@@ -207,9 +207,9 @@ export function ScenarioManager({
                     </div>
 
                     <div className="step-field step-info-pill">
-                      <label className="field-micro-label">Extra/mo</label>
-                      <span className={`badge badge-sm ${diffFromEmi >= 0 ? 'badge-success' : 'badge-warning'}`}>
-                        {diffFromEmi >= 0 ? '+' : ''}{formatCompactINR(diffFromEmi)}
+                      <span className="text-xs text-muted">Monthly Delta</span>
+                      <span className={`badge ${diffFromEmi >= 0 ? 'badge-success' : 'badge-warning'}`}>
+                        {diffFromEmi >= 0 ? '+' : ''}{formatINR(diffFromEmi)} / mo
                       </span>
                     </div>
                   </div>
@@ -227,6 +227,13 @@ export function ScenarioManager({
                 </div>
               );
             })}
+          </div>
+
+          <div className="timeline-tip">
+            <Sparkles size={14} className="text-accent" />
+            <span className="text-xs text-muted">
+              Any amount paid above the base EMI directly reduces the loan principal, accelerating loan closure and cutting total interest.
+            </span>
           </div>
         </div>
       </div>

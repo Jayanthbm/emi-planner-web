@@ -3,7 +3,7 @@ import { IndianRupee, Percent, Calendar, Clock, RefreshCw } from 'lucide-react';
 import { formatINR, formatCompactINR } from '../utils/formatters';
 
 export function LoanInputs({ config, onChange, onReset }) {
-  const [tenureUnit, setTenureUnit] = useState('years');
+  const [tenureUnit, setTenureUnit] = useState('years'); // 'years' | 'months'
 
   const handlePrincipalChange = (e) => {
     const val = parseFloat(e.target.value) || 0;
@@ -39,14 +39,14 @@ export function LoanInputs({ config, onChange, onReset }) {
       <div className="card-header flex-between">
         <div>
           <h2 className="card-title">Loan Parameters</h2>
-          <p className="card-subtitle">Base terms and initial loan details</p>
+          <p className="card-subtitle">Base terms and starting timeline</p>
         </div>
         <button
           className="btn btn-secondary btn-sm"
           onClick={onReset}
           title="Reset to default loan values"
         >
-          <RefreshCw size={13} /> Reset
+          <RefreshCw size={14} /> Reset
         </button>
       </div>
 
@@ -54,7 +54,7 @@ export function LoanInputs({ config, onChange, onReset }) {
         {/* Loan Principal */}
         <div className="input-group">
           <label className="input-label">
-            <span>Principal Amount</span>
+            <span>Loan Principal</span>
             <span className="badge badge-accent">{formatCompactINR(config.principal)}</span>
           </label>
           <div className="input-with-icon">
@@ -66,7 +66,6 @@ export function LoanInputs({ config, onChange, onReset }) {
               onChange={handlePrincipalChange}
               step="50000"
               min="10000"
-              placeholder="50,00,000"
             />
           </div>
           <span className="input-helper">{formatINR(config.principal)}</span>
@@ -75,8 +74,7 @@ export function LoanInputs({ config, onChange, onReset }) {
         {/* Interest Rate */}
         <div className="input-group">
           <label className="input-label">
-            <span>Interest Rate</span>
-            <span className="badge badge-neutral">{(config.annualRate / 12).toFixed(2)}% / mo</span>
+            <span>Annual Interest Rate</span>
           </label>
           <div className="input-with-icon">
             <input
@@ -87,11 +85,10 @@ export function LoanInputs({ config, onChange, onReset }) {
               step="0.1"
               min="1"
               max="40"
-              placeholder="8.5"
             />
             <span className="icon-suffix">% p.a.</span>
           </div>
-          <span className="input-helper">Annual percentage rate</span>
+          <span className="input-helper">Monthly: {(config.annualRate / 12).toFixed(3)}%</span>
         </div>
 
         {/* Tenure */}
@@ -116,7 +113,7 @@ export function LoanInputs({ config, onChange, onReset }) {
             </div>
           </div>
           <div className="input-with-icon">
-            <Clock size={15} className="icon-prefix text-muted" />
+            <Clock size={16} className="icon-prefix text-muted" />
             <input
               type="number"
               className="input-field"
@@ -136,7 +133,7 @@ export function LoanInputs({ config, onChange, onReset }) {
         <div className="input-group">
           <label className="input-label">First EMI Date</label>
           <div className="input-with-icon">
-            <Calendar size={15} className="icon-prefix text-muted" />
+            <Calendar size={16} className="icon-prefix text-muted" />
             <input
               type="date"
               className="input-field"
@@ -144,7 +141,7 @@ export function LoanInputs({ config, onChange, onReset }) {
               onChange={handleDateChange}
             />
           </div>
-          <span className="input-helper">Start of amortization</span>
+          <span className="input-helper">Original maturity ~ {Math.floor(config.tenureMonths / 12)} years later</span>
         </div>
       </div>
     </div>
