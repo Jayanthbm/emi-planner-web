@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name emi-planner-web",
     "lint": "eslint .",
     "preview": "vite preview"
   },
