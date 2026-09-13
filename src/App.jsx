@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Landmark, FileSpreadsheet, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Header } from './components/Header';
+import { MobileHeader } from './components/MobileHeader';
 import { LoanInputs } from './components/LoanInputs';
 import { ScenarioManager } from './components/ScenarioManager';
 import { KpiCards } from './components/KpiCards';
 import { ScenarioComparison } from './components/ScenarioComparison';
 import { ScheduleTable } from './components/ScheduleTable';
+import { MobileLoanInputs } from './components/MobileLoanInputs';
+import { MobileScenarioManager } from './components/MobileScenarioManager';
+import { MobileKpiCards } from './components/MobileKpiCards';
+import { MobileScenarioComparison } from './components/MobileScenarioComparison';
 import {
   calculateStandardEMI,
   calculateAmortizationSchedule,
   DEFAULT_SCENARIOS,
 } from './utils/emiCalculator';
 import { exportToExcel } from './utils/excelExporter';
+
+const MOBILE_BREAKPOINT = 768;
 
 const DEFAULT_LOAN = {
   principal: 5000000, // ₹50 Lakhs
@@ -53,6 +60,16 @@ export function App() {
       return scenarios[0].id;
     }
   });
+
+  // Detect mobile/desktop view
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Sync to localStorage
   useEffect(() => {
@@ -130,25 +147,9 @@ export function App() {
 
   return (
     <div className="app-container">
-      {/* Header - shown on all screens */}
-      <header className="app-header">
-        <div className="brand-title-wrap">
-          <div className="brand-icon">
-            <Landmark size={24} />
-          </div>
-          <div>
-            <h1 className="app-title">EMI & Prepayment Planner</h1>
-            <p className="app-subtitle">
-              Simulate stepped prepayment strategies and maximize interest savings
-            </p>
-          </div>
-        </div>
-
-        <button className="btn btn-secondary export-btn-main" onClick={handleExportExcel}>
-          <FileSpreadsheet size={16} className="text-success" />
-          Export All Scenarios to Excel
-        </button>
-      </header>
+      {/* Separate Desktop & Mobile Headers */}
+      <Header onExportExcel={handleExportExcel} />
+      <MobileHeader onExportExcel={handleExportExcel} />
 
       {/* Desktop-Only Full Planner Interface */}
       <div className="desktop-only-content">
@@ -196,6 +197,47 @@ export function App() {
             scheduleResult={activeScheduleResult}
             scenarioName={activeScenario.name}
             onExportExcel={handleExportExcel}
+          />
+        </section>
+      </div>
+
+      {/* Mobile-Only Content */}
+      <div className="mobile-only-content">
+        <section className="mobile-section">
+          <MobileLoanInputs
+            config={loanConfig}
+            onChange={setLoanConfig}
+            onReset={handleResetLoan}
+          />
+        </section>
+
+        <section className="mobile-section">
+          <MobileScenarioManager
+            scenarios={scenarios}
+            activeScenarioId={activeScenarioId}
+            onSelectScenario={setActiveScenarioId}
+            onUpdateScenario={handleUpdateScenario}
+            onAddScenario={handleAddScenario}
+            onDuplicateScenario={handleDuplicateScenario}
+            onDeleteScenario={handleDeleteScenario}
+            standardEmi={standardEmi}
+          />
+        </section>
+
+        <section className="mobile-section">
+          <MobileKpiCards
+            result={activeScheduleResult}
+            loanConfig={loanConfig}
+            scenarioName={activeScenario.name}
+          />
+        </section>
+
+        <section className="mobile-section">
+          <MobileScenarioComparison
+            loanConfig={loanConfig}
+            scenarios={scenarios}
+            activeScenarioId={activeScenarioId}
+            onSelectScenario={setActiveScenarioId}
           />
         </section>
       </div>
