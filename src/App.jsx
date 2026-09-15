@@ -93,6 +93,35 @@ export function App() {
   );
   const activeScheduleResult = calculateAmortizationSchedule(loanConfig, activeScenario.payments);
 
+  // Update loanConfig and sync First EMI Date to all scenario plans
+  const handleLoanConfigChange = (newConfig) => {
+    if (newConfig.startDate !== loanConfig.startDate) {
+      const oldStartDate = loanConfig.startDate;
+      const newStartDate = newConfig.startDate;
+
+      setScenarios((prevScenarios) =>
+        prevScenarios.map((scenario) => {
+          if (!scenario.payments || scenario.payments.length === 0) {
+            return {
+              ...scenario,
+              payments: [{ date: newStartDate, amount: Math.round(standardEmi) }],
+            };
+          }
+
+          const updatedPayments = scenario.payments.map((p, idx) => {
+            if (idx === 0 || p.date === oldStartDate) {
+              return { ...p, date: newStartDate };
+            }
+            return p;
+          });
+
+          return { ...scenario, payments: updatedPayments };
+        })
+      );
+    }
+    setLoanConfig(newConfig);
+  };
+
   // Scenario Handlers
   const handleUpdateScenario = (id, updates) => {
     setScenarios((prev) =>
@@ -157,7 +186,7 @@ export function App() {
         <section className="top-grid">
           <LoanInputs
             config={loanConfig}
-            onChange={setLoanConfig}
+            onChange={handleLoanConfigChange}
             onReset={handleResetLoan}
           />
           <ScenarioManager
@@ -206,7 +235,7 @@ export function App() {
         <section className="mobile-section">
           <MobileLoanInputs
             config={loanConfig}
-            onChange={setLoanConfig}
+            onChange={handleLoanConfigChange}
             onReset={handleResetLoan}
           />
         </section>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IndianRupee, Percent, Calendar, Clock, RefreshCw } from 'lucide-react';
+import { Clock, Calendar, RefreshCw } from 'lucide-react';
 import { formatINR, formatCompactINR } from '../utils/formatters';
 
 export function MobileLoanInputs({ config, onChange, onReset }) {

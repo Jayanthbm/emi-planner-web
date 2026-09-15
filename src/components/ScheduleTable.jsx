@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { formatINR, formatTenure } from '../utils/formatters';
+import { formatINR } from '../utils/formatters';
 import { ChevronLeft, ChevronRight, Filter, Download } from 'lucide-react';
 
 export function ScheduleTable({ scheduleResult, scenarioName, onExportExcel }) {
@@ -92,25 +92,25 @@ export function ScheduleTable({ scheduleResult, scenarioName, onExportExcel }) {
 
               return (
                 <tr key={row.monthNumber} className={isFinal ? 'row-final' : isExtra ? 'row-accelerated' : ''}>
-                  <td className="text-center font-mono text-muted">{row.monthNumber}</td>
-                  <td className="font-medium text-center">{row.dateStr}</td>
-                  <td className="text-right text-muted">{formatINR(row.standardEmi)}</td>
-                  <td className="text-right font-semibold">
+                  <td className="font-mono text-muted">{row.monthNumber}</td>
+                  <td className="font-medium">{row.dateStr}</td>
+                  <td className="text-muted">{formatINR(row.standardEmi)}</td>
+                  <td className="font-semibold">
                     {formatINR(row.amountPaid)}
                   </td>
-                  <td className="text-right text-danger">{formatINR(row.interestPaid)}</td>
-                  <td className="text-right text-success">{formatINR(row.principalPaid)}</td>
-                  <td className="text-right">
+                  <td className="text-danger">{formatINR(row.interestPaid)}</td>
+                  <td className="text-success">{formatINR(row.principalPaid)}</td>
+                  <td>
                     {row.extraPaid > 0 ? (
                       <span className="text-accent font-semibold">+{formatINR(row.extraPaid)}</span>
                     ) : (
                       <span className="text-muted">-</span>
                     )}
                   </td>
-                  <td className="text-right font-semibold">
+                  <td className="font-semibold">
                     {formatINR(row.remainingBalance)}
                   </td>
-                  <td className="text-center text-muted">
+                  <td className="text-muted">
                     {schedule.length - row.monthNumber}
                   </td>
                 </tr>

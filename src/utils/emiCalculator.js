@@ -1,6 +1,37 @@
 import { addMonths, format, parseISO, isAfter, isEqual } from 'date-fns';
 
 /**
+ * Safely parse a date string or Date object
+ */
+export function safeParseDate(dateInput, fallback = new Date(2024, 0, 1)) {
+  if (!dateInput) return fallback;
+  try {
+    const parsed = typeof dateInput === 'string' ? parseISO(dateInput) : dateInput;
+    if (parsed && !isNaN(parsed.getTime())) {
+      return parsed;
+    }
+  } catch {
+    // fallback
+  }
+  return fallback;
+}
+
+/**
+ * Safely format a date
+ */
+export function safeFormatDate(dateInput, formatStr = 'MMM yyyy', fallbackStr = 'Invalid Date') {
+  try {
+    const d = safeParseDate(dateInput, null);
+    if (d && !isNaN(d.getTime())) {
+      return format(d, formatStr);
+    }
+  } catch {
+    // fallback
+  }
+  return fallbackStr;
+}
+
+/**
  * Standard Monthly EMI Calculation
  * Formula: P * r * (1 + r)^n / ((1 + r)^n - 1)
  */
@@ -17,10 +48,15 @@ export function calculateStandardEMI(principal, annualRate, tenureMonths) {
 export function getApplicablePayment(date, payments) {
   if (!payments || payments.length === 0) return 0;
   // Sort payments by date ascending
-  const sorted = [...payments].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const sorted = [...payments].sort((a, b) => {
+    const da = safeParseDate(a.date).getTime();
+    const db = safeParseDate(b.date).getTime();
+    return da - db;
+  });
+
   let applicableAmount = sorted[0].amount;
   for (const payment of sorted) {
-    const pDate = typeof payment.date === 'string' ? parseISO(payment.date) : payment.date;
+    const pDate = safeParseDate(payment.date);
     if (isAfter(date, pDate) || isEqual(date, pDate)) {
       applicableAmount = Number(payment.amount);
     }
@@ -36,7 +72,9 @@ export function calculateAmortizationSchedule(loanConfig, paymentSchedule) {
   const monthlyRate = annualRate / 100 / 12;
   const standardEmi = calculateStandardEMI(principal, annualRate, tenureMonths);
   const totalInterestOriginal = standardEmi * tenureMonths - principal;
-  const originalEndDate = addMonths(parseISO(startDate), tenureMonths);
+  
+  const start = safeParseDate(startDate);
+  const originalEndDate = addMonths(start, tenureMonths);
 
   let remainingBalance = principal;
   let totalInterestPaid = 0;
@@ -44,8 +82,6 @@ export function calculateAmortizationSchedule(loanConfig, paymentSchedule) {
   let totalExtraPaid = 0;
   let month = 0;
   const schedule = [];
-
-  const start = parseISO(startDate);
 
   while (remainingBalance > 0.01 && month < 600) {
     // Safety cap 50 yrs
@@ -80,7 +116,7 @@ export function calculateAmortizationSchedule(loanConfig, paymentSchedule) {
     schedule.push({
       monthNumber: month,
       date: currentDate,
-      dateStr: format(currentDate, 'MMM yyyy'),
+      dateStr: safeFormatDate(currentDate, 'MMM yyyy'),
       standardEmi,
       amountPaid: payment,
       interestPaid: interest,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Copy, Sparkles, AlertCircle } from 'lucide-react';
-import { formatINR, formatCompactINR } from '../utils/formatters';
+import { Plus, Trash2, Copy, Sparkles } from 'lucide-react';
+import { formatINR } from '../utils/formatters';
 
 export function ScenarioManager({
   scenarios,

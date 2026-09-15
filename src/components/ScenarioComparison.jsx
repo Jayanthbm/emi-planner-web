@@ -1,6 +1,5 @@
 import React from 'react';
-import { format } from 'date-fns';
-import { calculateAmortizationSchedule } from '../utils/emiCalculator';
+import { calculateAmortizationSchedule, safeFormatDate } from '../utils/emiCalculator';
 import { formatINR, formatTenure } from '../utils/formatters';
 import { Award } from 'lucide-react';
 
@@ -85,7 +84,7 @@ export function ScenarioComparison({ loanConfig, scenarios, activeScenarioId, on
                     )}
                   </td>
                   <td>
-                    <span className="font-medium">{format(result.actualEndDate, 'MMM yyyy')}</span>
+                    <span className="font-medium">{safeFormatDate(result.actualEndDate, 'MMM yyyy')}</span>
                   </td>
                   <td>
                     {isActive ? (
